@@ -136,43 +136,29 @@ uint8_t matrix_key_count(void)
 
 /* Column pin configuration
  * col: 0   1   2   3   4   5   6   7   8   9   10
- * pin: B7  D6  F7  F6  B6  D4  E6  B4  B5  C6  D7
+ * pin: F0  F1  F4  F5  F6  F7  B7  B3  B2  B1  B0 
  */
 static void  init_cols(void)
 {
-    DDRB = DDRC = DDRE = DDRF = 0; // columns
-    PORTB = PORTC = PORTE = PORTF = 255; // pullup resistors on inputs
+    DDRB = DDRF = 0; // columns
+    PORTB = PORTF = 255; // pullup resistors on inputs
     DDRD = 15; // rows (1 2 4 8) high and columns (16 32 64 128) low
     PORTD = 15;
 }
 
 static matrix_row_t read_cols(void)
 {
-#ifdef TEENSY
-    return (PINF&(1<<6) ? 0 : (1<<0)) |
-           (PINF&(1<<5) ? 0 : (1<<1)) |
+    return (PINF&(1<<0) ? 0 : (1<<0)) |
+           (PINF&(1<<1) ? 0 : (1<<1)) |
            (PINF&(1<<4) ? 0 : (1<<2)) |
-           (PINB&(1<<7) ? 0 : (1<<3)) |
-           (PINB&(1<<6) ? 0 : (1<<4)) |
-           (PINB&(1<<5) ? 0 : (1<<5)) |
-           (PINB&(1<<4) ? 0 : (1<<6)) |
+           (PINF&(1<<5) ? 0 : (1<<3)) |
+           (PINF&(1<<6) ? 0 : (1<<4)) |
+           (PINF&(1<<7) ? 0 : (1<<5)) |
+           (PINB&(1<<7) ? 0 : (1<<6)) |
            (PINB&(1<<3) ? 0 : (1<<7)) |
            (PINB&(1<<2) ? 0 : (1<<8)) |
            (PINB&(1<<1) ? 0 : (1<<9)) |
            (PINB&(1<<0) ? 0 : (1<<10)) ;
-#else
-    return (PINB&(1<<7) ? 0 : (1<<10)) |
-           (PIND&(1<<6) ? 0 : (1<<9)) |
-           (PINF&(1<<7) ? 0 : (1<<8)) |
-           (PINF&(1<<6) ? 0 : (1<<7)) |
-           (PINB&(1<<6) ? 0 : (1<<6)) |
-           (PIND&(1<<4) ? 0 : (1<<5)) |
-           (PINE&(1<<6) ? 0 : (1<<4)) |
-           (PINB&(1<<4) ? 0 : (1<<3)) |
-           (PINB&(1<<5) ? 0 : (1<<2)) |
-           (PINC&(1<<6) ? 0 : (1<<1)) |
-           (PIND&(1<<7) ? 0 : (1<<0)) ;
-#endif
 }
 
 /* Row pin configuration
@@ -186,11 +172,7 @@ static void unselect_rows(void)
 }
 
 #define ROW_COUNT 4
-#ifdef TEENSY
 int rows[ROW_COUNT] = {0, 1, 2, 3};
-#else
-int rows[ROW_COUNT] = {0, 1, 3, 2};
-#endif
 
 static void select_row(uint8_t row)
 {
